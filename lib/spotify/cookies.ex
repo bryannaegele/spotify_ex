@@ -14,7 +14,7 @@ defmodule Spotify.Cookies do
     conn
     |> Plug.Conn.put_status(200)
     |> set_refresh_cookie(credentials.refresh_token)
-    |> set_access_cookie(credentials.access_token)
+    |> set_access_cookie(credentials.access_token, credentials.expiration)
   end
 
   @doc """
@@ -24,7 +24,7 @@ defmodule Spotify.Cookies do
 
   def set_refresh_cookie(conn, nil), do: conn
   def set_refresh_cookie(conn, refresh_token) do
-    Plug.Conn.put_resp_cookie(conn, "spotify_refresh_token", refresh_token)
+    Plug.Conn.put_resp_cookie(conn, "spotify_refresh_token", refresh_token, [max_age: 2_592_000])
   end
 
   @doc """
@@ -32,8 +32,8 @@ defmodule Spotify.Cookies do
   """
   def set_access_cookie(conn, string)
   def set_access_cookie(conn, nil), do: conn
-  def set_access_cookie(conn, access_token) do
-    Plug.Conn.put_resp_cookie(conn, "spotify_access_token", access_token)
+  def set_access_cookie(conn, access_token, expiration) do
+    Plug.Conn.put_resp_cookie(conn, "spotify_access_token", access_token, [max_age: expiration])
   end
 
   @doc """

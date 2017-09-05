@@ -48,7 +48,7 @@ defmodule Spotify.Credentials do
   """
   alias Spotify.Credentials
 
-  defstruct [:access_token, :refresh_token]
+  defstruct [:access_token, :refresh_token, :expiration]
 
   @doc """
   Returns a Spotify.Credentials struct from either a Plug.Conn or a Spotify.Credentials struct
@@ -59,14 +59,14 @@ defmodule Spotify.Credentials do
     conn = Plug.Conn.fetch_cookies(conn)
     access_token = conn.cookies["spotify_access_token"]
     refresh_token = conn.cookies["spotify_refresh_token"]
-    Credentials.new(access_token, refresh_token)
+    Credentials.new(access_token, refresh_token, expiration)
   end
 
   @doc """
   Returns a Spotify.Credentials struct given tokens
   """
-  def new(access_token, refresh_token) do
-    %Credentials{access_token: access_token, refresh_token: refresh_token}
+  def new(access_token, refresh_token, expiration) do
+    %Credentials{access_token: access_token, refresh_token: refresh_token, expiration: expiration}
   end
 
   @doc """
@@ -74,6 +74,6 @@ defmodule Spotify.Credentials do
   """
   def get_tokens_from_response(map)
   def get_tokens_from_response(response) do
-    Credentials.new(response["access_token"], response["refresh_token"])
+    Credentials.new(response["access_token"], response["refresh_token"], response["expires_in"])
   end
 end
